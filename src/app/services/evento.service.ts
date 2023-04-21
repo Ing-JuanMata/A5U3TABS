@@ -26,7 +26,6 @@ export class EventoService {
         anticipo: 500,
         metodo: 'Efectivo',
         saldo: 500,
-        pagado: false
       }
     ]
   }

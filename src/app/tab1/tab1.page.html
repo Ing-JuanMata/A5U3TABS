@@ -1,10 +1,108 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Tab 1
-    </ion-title>
+    <ion-title> Nuevo Evento </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <form>
+    <ion-item>
+      <ion-label>Fecha y Hora</ion-label>
+      <ion-datetime-button datetime="datetime"></ion-datetime-button>
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime
+            id="datetime"
+            displayFormat="DD/MM/YYYY HH:mm"
+            pickerFormat="DD/MM/YYYY HH:mm"
+          ></ion-datetime>
+        </ng-template>
+      </ion-modal>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Nombre</ion-label>
+      <ion-icon name="person" slot="start"></ion-icon>
+      <ion-input type="text"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Telefono</ion-label>
+      <ion-icon name="call" slot="start"></ion-icon>
+      <ion-input type="tel"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Descripci&oacute;n</ion-label>
+      <ion-icon name="information-circle" slot="start"></ion-icon>
+      <ion-textarea></ion-textarea>
+    </ion-item>
+    <ion-grid>
+      <ion-row class="ion-align-items-center">
+        <ion-col size="3">
+          <ion-item>
+            <ion-label position="floating">Tipo de evento</ion-label>
+            <ion-icon name="calendar" slot="start"></ion-icon>
+            <ion-select
+              interface="popover"
+              placeholder="Seleccione un tipo de evento"
+            >
+              <ion-select-option value="Cumpleaños">
+                Cumplea&ntilde;os
+              </ion-select-option>
+              <ion-select-option value="XV años">
+                XV a&ntilde;os
+              </ion-select-option>
+              <ion-select-option value="Boda"> Boda </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+        <ion-col size="3">
+          <ion-item>
+            <ion-label position="floating">Colores sobremanteles</ion-label>
+            <ion-icon name="color-fill" slot="start"></ion-icon>
+            <ion-select
+              interface="popover"
+              placeholder="Seleccione colores"
+              multiple="true"
+            >
+              <ion-select-option value="Blanco"> Blanco </ion-select-option>
+              <ion-select-option value="Rojo"> Rojo </ion-select-option>
+              <ion-select-option value="Azul"> Azul </ion-select-option>
+              <ion-select-option value="Negro"> Negro </ion-select-option>
+              <ion-select-option value="Rosa"> Rosa </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+        <ion-col size="3">
+          <ion-item>
+            <ion-label>Mesa de regalos</ion-label>
+            <ion-icon name="gift" slot="start" size="large"></ion-icon>
+            <ion-toggle></ion-toggle>
+          </ion-item>
+        </ion-col>
+        <ion-col size="3">
+          <ion-item>
+            <ion-label>Brincolin</ion-label>
+            <ion-icon name="happy" slot="start" size="large"></ion-icon>
+            <ion-toggle></ion-toggle>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="2">
+          <ion-item>
+            <ion-label position="floating">Invitados</ion-label>
+            <ion-icon name="person-add" slot="start"></ion-icon>
+            <ion-input type="number"></ion-input>
+          </ion-item>
+          <ion-progress-bar value=".5"></ion-progress-bar>
+        </ion-col>
+        <ion-col size="4">
+          <ion-item>
+            <ion-range min="0" max="100" step="10" value="50" pin ticks snaps>
+              <ion-icon name="water" slot="start"></ion-icon>
+            </ion-range>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
 </ion-content>

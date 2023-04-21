@@ -1,5 +1,4 @@
 import { FormControl } from '@angular/forms';
-import { Abono } from './abono';
 
 export interface Evento {
   fecha: string;
@@ -17,8 +16,6 @@ export interface Evento {
   anticipo: number;
   metodo: string;
   saldo: number;
-  pagado: boolean;
-  abonos?: Abono[];
 }
 
 export interface EventoForm {
