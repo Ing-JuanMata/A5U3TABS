@@ -26,7 +26,7 @@
     <ng-container *ngFor="let error of mensajes_validacion.fecha">
       <ion-item
         class="error-message"
-        *ngIf="eventoForm.get('fecha')?.hasError(error.tipo) && eventoForm.get('fecha')?.touched"
+        *ngIf="eventoForm.get('fecha')?.hasError(error.tipo)"
       >
         <ion-label>{{ error.mensaje }}</ion-label>
       </ion-item>
@@ -115,7 +115,7 @@
               class="error-message"
               *ngIf="eventoForm.get('tipo')?.hasError(error.tipo) && eventoForm.get('tipo')?.touched"
             >
-              <ion-label>{{ error.mensaje }}</ion-label>
+              <ion-label class="ion-text-wrap">{{ error.mensaje }}</ion-label>
             </ion-item>
           </ng-container>
         </ion-col>
@@ -144,16 +144,16 @@
               class="error-message"
               *ngIf="eventoForm.get('colorSobremantel')?.hasError(error.tipo) && eventoForm.get('colorSobremantel')?.touched"
             >
-              <ion-label>{{ error.mensaje }}</ion-label>
+              <ion-label class="ion-text-wrap">{{ error.mensaje }}</ion-label>
             </ion-item>
           </ng-container>
         </ion-col>
         <ion-col size="3">
           <ion-item>
             <ion-icon name="gift" slot="start" size="large"></ion-icon>
-            <ion-toggle formControlName="mesaRegalos"
-              >Mesa de regalos</ion-toggle
-            >
+            <ion-toggle formControlName="mesaRegalos">
+              Mesa de regalos
+            </ion-toggle>
           </ion-item>
         </ion-col>
         <ion-col size="3">
@@ -182,9 +182,9 @@
           <ng-container *ngFor="let error of mensajes_validacion.personas">
             <ion-item
               class="error-message"
-              *ngIf="eventoForm.get('personas')?.hasError(error.tipo) && eventoForm.get('cliente')?.touched"
+              *ngIf="eventoForm.get('personas')?.hasError(error.tipo) && eventoForm.get('personas')?.touched"
             >
-              <ion-label>{{ error.mensaje }}</ion-label>
+              <ion-label class="ion-text-wrap">{{ error.mensaje }}</ion-label>
             </ion-item>
           </ng-container>
         </ion-col>
@@ -204,14 +204,6 @@
               <ion-icon name="water" slot="start"></ion-icon>
             </ion-range>
           </ion-item>
-          <ng-container *ngFor="let error of mensajes_validacion.alberca">
-            <ion-item
-              class="error-message"
-              *ngIf="eventoForm.get('alberca')?.hasError(error.tipo) && eventoForm.get('alberca')?.touched"
-            >
-              <ion-label>{{ error.mensaje }}</ion-label>
-            </ion-item>
-          </ng-container>
         </ion-col>
         <ion-col size="3">
           <ion-item>
@@ -237,7 +229,7 @@
               class="error-message"
               *ngIf="eventoForm.get('anticipo')?.hasError(error.tipo) && eventoForm.get('anticipo')?.touched"
             >
-              <ion-label>{{ error.mensaje }}</ion-label>
+            <ion-label class="ion-text-wrap">{{ error.mensaje }}</ion-label>
             </ion-item>
           </ng-container>
         </ion-col>
@@ -245,7 +237,7 @@
       <ion-row class="ion-justify-content-center">
         <ion-col size="2">
           <ion-item
-            class="ion-text-center"
+            class="ion-text-center metodo"
             (click)="elegirMetodo('Transferencia')"
             #tarjeta
           >
@@ -257,8 +249,9 @@
         </ion-col>
         <ion-col size="2">
           <ion-item
-            class="ion-text-center"
+            class="ion-text-center metodo"
             (click)="elegirMetodo('Efectivo')"
+            color="primary"
             #efectivo
           >
             <ion-label>

@@ -3,6 +3,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { IonDatetime, IonicModule } from '@ionic/angular';
 import { EventoService } from '../services/evento.service';
 import { Evento } from '../models/evento';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-tab2',
@@ -21,7 +22,9 @@ export class Tab2Page implements OnInit {
   event?: Evento;
   highlightedDates: ColorDate[] = [];
 
-  constructor(private eventoService: EventoService) {}
+  constructor(private eventoService: EventoService, title:Title) {
+    title.setTitle('Calendario');
+  }
 
   ngOnInit() {
     const eventos = this.eventoService.getEventos();
@@ -30,6 +33,7 @@ export class Tab2Page implements OnInit {
 
   ionViewDidEnter() {
     this.ngOnInit();
+    this.calendar.reset();
   }
 
   onDateChange(event: any) {

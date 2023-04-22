@@ -1,15 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import {
+  AbstractControl,
   FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { IonDatetime, IonicModule, IonItem } from '@ionic/angular';
 import { EventoForm } from '../models/evento';
 import { EventoService } from '../services/evento.service';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-tab1',
@@ -23,29 +27,30 @@ export class Tab1Page {
   @ViewChild('tarjeta') tarjeta!: IonItem;
   @ViewChild('fecha') fecha!: IonDatetime;
   private precios = {
-    sobremanteles: 100,
+    sobremanteles: 200,
     mesaRegalos: 500,
     brincolin: 1000,
-    alberca: 500,
+    alberca: 5000,
   };
   eventoForm: FormGroup<EventoForm>;
   fechasOcupadas: string[] = [];
   mensajes_validacion: any;
-  constructor(private eventoService: EventoService) {
+  constructor(private eventoService: EventoService, private title: Title) {
+    this.title.setTitle('Nuevo evento');
     this.eventoForm = new FormGroup({
       fecha: new FormControl('', {
         nonNullable: true,
-        validators: [Validators.required],
+        validators: [Validators.required, this.validarFecha()],
       }),
       hora: new FormControl('', {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      cliente: new FormControl('', {
+      cliente: new FormControl('Juan Jesús Mata Solís', {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      celular: new FormControl('', {
+      celular: new FormControl('3117462453', {
         nonNullable: true,
         validators: [
           Validators.required,
@@ -54,25 +59,25 @@ export class Tab1Page {
           Validators.pattern(/^[0-9]{10}$/),
         ],
       }),
-      tipo: new FormControl('', {
+      tipo: new FormControl('Cumpleaños', {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      descripcion: new FormControl('', {
+      descripcion: new FormControl('Fiesta de cumpleaños con mucho alcohol', {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      alberca: new FormControl(0, {
+      alberca: new FormControl(80, {
         nonNullable: true,
       }),
-      mesaRegalos: new FormControl(false, {
+      mesaRegalos: new FormControl(true, {
         nonNullable: true,
       }),
-      colorSobremantel: new FormControl<string[]>([], {
+      colorSobremantel: new FormControl<string[]>(['Negro', 'Rojo'], {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      personas: new FormControl(0, {
+      personas: new FormControl(100, {
         nonNullable: true,
         validators: [
           Validators.required,
@@ -80,41 +85,60 @@ export class Tab1Page {
           Validators.max(1000),
         ],
       }),
-      brincolin: new FormControl(false, {
+      brincolin: new FormControl(true, {
         nonNullable: true,
       }),
-      precio: new FormControl(1000, {
-        nonNullable: true,
-        validators: [Validators.required],
-      }),
-      anticipo: new FormControl(0, {
+      precio: new FormControl(6900, {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      metodo: new FormControl('', {
+      anticipo: new FormControl(690, {
+        nonNullable: true,
+        validators: [
+          Validators.required,
+          Validators.min(100),
+          Validators.max(1000),
+        ],
+      }),
+      metodo: new FormControl('Efectivo', {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      saldo: new FormControl(1000, {
+      saldo: new FormControl(6210, {
         nonNullable: true,
         validators: [Validators.required],
       }),
     });
-    this.eventoForm.controls.anticipo.addValidators([
-      Validators.min(this.eventoForm.controls.precio.value * 0.1),
-      Validators.max(this.eventoForm.controls.precio.value),
-    ]);
     this.eventoForm.controls.anticipo.valueChanges.subscribe((value) => {
-      this.eventoForm.controls.saldo.setValue(
+      this.eventoForm.controls.saldo.patchValue(
         this.eventoForm.controls.precio.value - value
       );
+      this.actualizarValidacionesAnticipo();
+    });
+    this.eventoForm.controls.precio.valueChanges.subscribe((value) => {
+      this.eventoForm.controls.saldo.patchValue(
+        value - this.eventoForm.controls.anticipo.value
+      );
+      this.actualizarValidacionesAnticipo();
     });
     this.eventoService
       .getEventos()
       .forEach((evento) => this.fechasOcupadas.push(evento.fecha));
+    this.eventoForm.controls.colorSobremantel.valueChanges.subscribe(() => {
+      this.eventoForm.controls.precio.patchValue(this.calcularPrecio());
+    });
+    this.eventoForm.controls.mesaRegalos.valueChanges.subscribe(() => {
+      this.eventoForm.controls.precio.patchValue(this.calcularPrecio());
+    });
+    this.eventoForm.controls.brincolin.valueChanges.subscribe(() => {
+      this.eventoForm.controls.precio.patchValue(this.calcularPrecio());
+    });
+    this.eventoForm.controls.alberca.valueChanges.subscribe(() => {
+      this.eventoForm.controls.precio.patchValue(this.calcularPrecio());
+    });
     this.mensajes_validacion = {
       fecha: [
-        { tipo: 'required', mensaje: 'La fecha es obligatoria' },
+        { tipo: 'required', mensaje: 'La fecha ya está ocupada' },
         { tipo: 'fechaOcupada', mensaje: 'La fecha ya está ocupada' },
       ],
       hora: [{ tipo: 'required', mensaje: 'La hora es obligatoria' }],
@@ -140,33 +164,48 @@ export class Tab1Page {
       personas: [
         { tipo: 'required', mensaje: 'El número de personas es obligatorio' },
         { tipo: 'min', mensaje: 'El número de personas debe ser mayor a 0' },
-        { tipo: 'max', mensaje: 'El número de personas debe ser menor a 1000' },
+        { tipo: 'max', mensaje: 'La capacidad maxima es de 1000 personas' },
       ],
       anticipo: [
         { tipo: 'required', mensaje: 'El anticipo es obligatorio' },
         {
           tipo: 'min',
-          mensaje: 'El anticipo debe ser mayor al 10% del precio',
+          mensaje: `El anticipo debe ser por lo menos $${
+            this.calcularPrecio() * 0.1
+          }`,
         },
-        { tipo: 'max', mensaje: 'El anticipo debe ser menor al precio' },
+        {
+          tipo: 'max',
+          mensaje: 'El anticipo no puede ser superior al total a pagar',
+        },
       ],
-      metodo: [
-        { tipo: 'required', mensaje: 'El método de pago es obligatorio' },
-      ],
+      metodo: [{ tipo: 'required', mensaje: 'Se requiere un método de pago' }],
       saldo: [{ tipo: 'required', mensaje: 'El saldo es obligatorio' }],
     };
   }
 
   ionViewDidEnter() {
-    if (!this.fecha.value) return;
+    if (this.fecha.value) return;
     const fecha = new Date();
-    this.fecha.value = `${fecha.toISOString().slice(0, 10)}T${
+    const formato = fecha
+      .toLocaleDateString('es-MX', {
+        timeZone: 'America/Mazatlan',
+        month: '2-digit',
+        day: '2-digit',
+        year: 'numeric',
+      })
+      .replace(/\//g, '-')
+      .split('-')
+      .reverse()
+      .join('-');
+    this.fecha.value = `${formato}T${
       fecha.getHours() < 10 ? '0' + fecha.getHours() : fecha.getHours()
     }:${
       fecha.getMinutes() < 10 ? '0' + fecha.getMinutes() : fecha.getMinutes()
     }:${
       fecha.getSeconds() < 10 ? '0' + fecha.getSeconds() : fecha.getSeconds()
     }.${fecha.getMilliseconds()}Z`;
+    this.setFechaHora(fecha);
   }
 
   fechaDesocupada() {
@@ -177,7 +216,7 @@ export class Tab1Page {
 
   elegirMetodo(metodo: string) {
     if (metodo === 'Efectivo') {
-      if(this.efectivo.color === 'primary') {
+      if (this.efectivo.color === 'primary') {
         this.efectivo.color = undefined;
         this.eventoForm.controls.metodo.patchValue('');
         return;
@@ -186,7 +225,7 @@ export class Tab1Page {
       this.tarjeta.color = undefined;
       this.eventoForm.controls.metodo.patchValue('Efectivo');
     } else {
-      if(this.tarjeta.color === 'primary') {
+      if (this.tarjeta.color === 'primary') {
         this.tarjeta.color = undefined;
         this.eventoForm.controls.metodo.patchValue('');
         return;
@@ -213,15 +252,71 @@ export class Tab1Page {
       this.eventoForm.controls.hora.patchValue(
         fecha.toLocaleTimeString().slice(0, 5)
       );
-      console.log(this.eventoForm.value);
     }
   }
 
   confirmar() {
-    console.log('confirmar', this.eventoForm.value);
+    this.eventoService.addEvento({
+      ...this.eventoForm.getRawValue(),
+      estado: 'Confirmado',
+    });
+    this.fechasOcupadas.push(
+      new Date(this.eventoForm.controls.fecha.value).toISOString().slice(0, 10)
+    );
+    this.eventoForm.reset();
   }
 
   apartar() {
-    console.log('apartar', this.eventoForm.value);
+    this.eventoService.addEvento({
+      ...this.eventoForm.getRawValue(),
+      estado: 'Apartado',
+    });
+    this.fechasOcupadas.push(
+      new Date(this.eventoForm.controls.fecha.value).toISOString().slice(0, 10)
+    );
+    this.eventoForm.reset();
+  }
+
+  private calcularPrecio(): number {
+    let precio = 1000;
+    precio +=
+      this.precios.sobremanteles *
+      this.eventoForm.controls.colorSobremantel.value.length;
+    precio += this.eventoForm.controls.mesaRegalos.value
+      ? this.precios.mesaRegalos
+      : 0;
+    precio += this.eventoForm.controls.brincolin.value
+      ? this.precios.brincolin
+      : 0;
+    precio +=
+      (this.precios.alberca * this.eventoForm.controls.alberca.value) / 100;
+    return precio;
+  }
+
+  private actualizarValidacionesAnticipo() {
+    this.eventoForm.controls.anticipo.setValidators([
+      Validators.required,
+      Validators.min(this.calcularPrecio() * 0.1),
+      Validators.max(this.calcularPrecio()),
+    ]);
+    this.eventoForm.controls.anticipo.updateValueAndValidity({
+      emitEvent: false,
+    });
+  }
+
+  public getFechasOcupadas() {
+    return this.fechasOcupadas;
+  }
+
+  private validarFecha(): ValidatorFn {
+    const fechas = this.getFechasOcupadas();
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) return null;
+      const fecha = new Date(control.value);
+      if (fechas.includes(fecha.toISOString().slice(0, 10))) {
+        return { fechaOcupada: true };
+      }
+      return null;
+    };
   }
 }
