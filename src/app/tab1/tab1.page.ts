@@ -46,11 +46,11 @@ export class Tab1Page {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      cliente: new FormControl('Juan Jesús Mata Solís', {
+      cliente: new FormControl('', {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      celular: new FormControl('3117462453', {
+      celular: new FormControl('', {
         nonNullable: true,
         validators: [
           Validators.required,
@@ -59,25 +59,25 @@ export class Tab1Page {
           Validators.pattern(/^[0-9]{10}$/),
         ],
       }),
-      tipo: new FormControl('Cumpleaños', {
+      tipo: new FormControl('', {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      descripcion: new FormControl('Fiesta de cumpleaños con mucho alcohol', {
+      descripcion: new FormControl('', {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      alberca: new FormControl(80, {
+      alberca: new FormControl(0, {
         nonNullable: true,
       }),
       mesaRegalos: new FormControl(true, {
         nonNullable: true,
       }),
-      colorSobremantel: new FormControl<string[]>(['Negro', 'Rojo'], {
+      colorSobremantel: new FormControl<string[]>([], {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      personas: new FormControl(100, {
+      personas: new FormControl(0, {
         nonNullable: true,
         validators: [
           Validators.required,
@@ -85,14 +85,14 @@ export class Tab1Page {
           Validators.max(1000),
         ],
       }),
-      brincolin: new FormControl(true, {
+      brincolin: new FormControl(false, {
         nonNullable: true,
       }),
-      precio: new FormControl(6900, {
+      precio: new FormControl(1000, {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      anticipo: new FormControl(690, {
+      anticipo: new FormControl(0, {
         nonNullable: true,
         validators: [
           Validators.required,
@@ -104,7 +104,7 @@ export class Tab1Page {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      saldo: new FormControl(6210, {
+      saldo: new FormControl(1000, {
         nonNullable: true,
         validators: [Validators.required],
       }),
