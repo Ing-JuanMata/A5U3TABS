@@ -2,10 +2,9 @@ import { Injectable } from '@angular/core';
 import { Evento } from '../models/evento';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class EventoService {
-
   private eventos: Evento[];
 
   constructor() {
@@ -26,7 +25,34 @@ export class EventoService {
         anticipo: 500,
         metodo: 'Efectivo',
         saldo: 500,
-      }
-    ]
+      },
+    ];
+  }
+
+  getEventos() {
+    return this.eventos;
+  }
+
+  getEvento(fecha: string) {
+    return this.eventos.find((evento) => evento.fecha === fecha);
+  }
+
+  addEvento(evento: Evento) {
+    this.eventos.push(evento);
+    return this.eventos;
+  }
+
+  updateEvento(evento: Evento) {
+    const index = this.eventos.findIndex(
+      (evento) => evento.fecha === evento.fecha
+    );
+    this.eventos[index] = evento;
+    return this.eventos;
+  }
+
+  deleteEvento(fecha: string) {
+    const index = this.eventos.findIndex((evento) => evento.fecha === fecha);
+    this.eventos.splice(index, 1);
+    return this.eventos;
   }
 }
