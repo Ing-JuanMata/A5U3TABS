@@ -70,7 +70,7 @@ export class Tab1Page {
       alberca: new FormControl(0, {
         nonNullable: true,
       }),
-      mesaRegalos: new FormControl(true, {
+      mesaRegalos: new FormControl(false, {
         nonNullable: true,
       }),
       colorSobremantel: new FormControl<string[]>([], {
@@ -170,9 +170,7 @@ export class Tab1Page {
         { tipo: 'required', mensaje: 'El anticipo es obligatorio' },
         {
           tipo: 'min',
-          mensaje: `El anticipo debe ser por lo menos $${
-            this.calcularPrecio() * 0.1
-          }`,
+          mensaje: 'El anticipo debe ser por lo menos el 10%',
         },
         {
           tipo: 'max',
