@@ -20,29 +20,38 @@
       </ion-modal>
     </ion-item>
     <ion-item>
-      <ion-label position="floating">Nombre</ion-label>
       <ion-icon name="person" slot="start"></ion-icon>
-      <ion-input type="text"></ion-input>
+      <ion-input
+        label="Nombre"
+        labelPlacement="floating"
+        type="text"
+      ></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label position="floating">Telefono</ion-label>
       <ion-icon name="call" slot="start"></ion-icon>
-      <ion-input type="tel"></ion-input>
+      <ion-input
+        label="Telefono"
+        labelPlacement="floating"
+        type="tel"
+      ></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label position="floating">Descripci&oacute;n</ion-label>
       <ion-icon name="information-circle" slot="start"></ion-icon>
-      <ion-textarea></ion-textarea>
+      <ion-textarea
+        label="Descripción"
+        labelPlacement="floating"
+      ></ion-textarea>
     </ion-item>
     <ion-grid>
       <ion-row class="ion-align-items-center">
         <ion-col size="3">
           <ion-item>
-            <ion-label position="floating">Tipo de evento</ion-label>
             <ion-icon name="calendar" slot="start"></ion-icon>
             <ion-select
               interface="popover"
               placeholder="Seleccione un tipo de evento"
+              label="Tipo de evento"
+              labelPlacement="floating"
             >
               <ion-select-option value="Cumpleaños">
                 Cumplea&ntilde;os
@@ -56,12 +65,13 @@
         </ion-col>
         <ion-col size="3">
           <ion-item>
-            <ion-label position="floating">Colores sobremanteles</ion-label>
             <ion-icon name="color-fill" slot="start"></ion-icon>
             <ion-select
               interface="popover"
               placeholder="Seleccione colores"
               multiple="true"
+              label="Colores sobremanteles"
+              labelPlacement="floating"
             >
               <ion-select-option value="Blanco"> Blanco </ion-select-option>
               <ion-select-option value="Rojo"> Rojo </ion-select-option>
@@ -73,34 +83,101 @@
         </ion-col>
         <ion-col size="3">
           <ion-item>
-            <ion-label>Mesa de regalos</ion-label>
             <ion-icon name="gift" slot="start" size="large"></ion-icon>
-            <ion-toggle></ion-toggle>
+            <ion-toggle>Mesa de regalos</ion-toggle>
           </ion-item>
         </ion-col>
         <ion-col size="3">
           <ion-item>
-            <ion-label>Brincolin</ion-label>
             <ion-icon name="happy" slot="start" size="large"></ion-icon>
-            <ion-toggle></ion-toggle>
+            <ion-toggle>Brincolin</ion-toggle>
           </ion-item>
         </ion-col>
       </ion-row>
       <ion-row>
         <ion-col size="2">
           <ion-item>
-            <ion-label position="floating">Invitados</ion-label>
             <ion-icon name="person-add" slot="start"></ion-icon>
-            <ion-input type="number"></ion-input>
+            <ion-input
+              label="Invitados"
+              labelPlacement="floating"
+              type="number"
+            ></ion-input>
           </ion-item>
           <ion-progress-bar value=".5"></ion-progress-bar>
         </ion-col>
         <ion-col size="4">
           <ion-item>
-            <ion-range min="0" max="100" step="10" value="50" pin ticks snaps>
+            <ion-range aria-label="" min="0" max="100" step="10" value="50" pin ticks snaps>
               <ion-icon name="water" slot="start"></ion-icon>
             </ion-range>
           </ion-item>
+        </ion-col>
+        <ion-col size="3">
+          <ion-item>
+            <ion-label position="stacked">Total a pagar</ion-label>
+            <ion-icon name="cash" slot="start"></ion-icon>
+            <ion-text color="success"><p>{{10|currency}}</p></ion-text>
+          </ion-item>
+        </ion-col>
+        <ion-col size="3">
+          <ion-item>
+            <ion-icon name="cash" slot="start"></ion-icon>
+            <ion-input
+              label="Anticipo"
+              labelPlacement="floating"
+              type="number"
+            ></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row class="ion-justify-content-center">
+        <ion-col size="1">
+          <ion-item
+            class="ion-text-center"
+            (click)="elegirMetodo('Tarjeta')"
+            #tarjeta
+          >
+            <ion-label>
+              <ion-icon name="card" size="large"></ion-icon>
+              <h2>Tarjeta</h2>
+            </ion-label>
+          </ion-item>
+        </ion-col>
+        <ion-col size="1">
+          <ion-item
+            class="ion-text-center"
+            (click)="elegirMetodo('Efectivo')"
+            #efectivo
+          >
+            <ion-label>
+              <ion-icon name="cash" size="large"></ion-icon>
+              <h2>Efectivo</h2>
+            </ion-label>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="12">
+          <ion-item class="ion-text-end">
+            <ion-label>
+              <h1>Resto: {{100 | currency}}</h1>
+            </ion-label>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="6">
+          <ion-button expand="block" shape="round">
+            <ion-icon name="calendar-number" slot="start"></ion-icon>
+            Apartar
+          </ion-button>
+        </ion-col>
+        <ion-col size="6">
+          <ion-button expand="block" shape="round" color="success">
+            <ion-icon name="card" slot="start"></ion-icon>
+            Confirmar
+          </ion-button>
         </ion-col>
       </ion-row>
     </ion-grid>

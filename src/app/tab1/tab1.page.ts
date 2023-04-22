@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { Component, ViewChild } from '@angular/core';
+import { IonItem, IonicModule } from '@ionic/angular';
 
 @Component({
   selector: 'app-tab1',
@@ -10,5 +10,17 @@ import { IonicModule } from '@ionic/angular';
   imports: [IonicModule, CommonModule],
 })
 export class Tab1Page {
+  @ViewChild('efectivo') efectivo!: IonItem;
+  @ViewChild('tarjeta') tarjeta!: IonItem;
   constructor() {}
+
+  elegirMetodo(metodo: string) {
+    if (metodo === 'Efectivo') {
+      this.efectivo.color = 'primary';
+      this.tarjeta.color = undefined;
+    } else {
+      this.efectivo.color = undefined;
+      this.tarjeta.color = 'primary';
+    }
+  }
 }
