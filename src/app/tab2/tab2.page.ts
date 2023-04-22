@@ -26,7 +26,10 @@ export class Tab2Page implements OnInit {
   ngOnInit() {
     const eventos = this.eventoService.getEventos();
     eventos.forEach((evento) => this.marcarFecha(evento.fecha, evento.tipo));
-    this.event = eventos[0];
+  }
+
+  ionViewDidEnter() {
+    this.ngOnInit();
   }
 
   onDateChange(event: any) {
