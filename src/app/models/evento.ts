@@ -16,6 +16,7 @@ export interface Evento {
   anticipo: number;
   metodo: string;
   saldo: number;
+  estado: string;
 }
 
 export interface EventoForm {
