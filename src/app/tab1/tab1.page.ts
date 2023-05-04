@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -14,6 +14,7 @@ import { IonDatetime, IonicModule, IonItem } from '@ionic/angular';
 import { EventoForm } from '../models/evento';
 import { EventoService } from '../services/evento.service';
 import { Title } from '@angular/platform-browser';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-tab1',
@@ -22,10 +23,11 @@ import { Title } from '@angular/platform-browser';
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule, ReactiveFormsModule],
 })
-export class Tab1Page {
+export class Tab1Page implements OnDestroy {
   @ViewChild('efectivo') efectivo!: IonItem;
   @ViewChild('tarjeta') tarjeta!: IonItem;
   @ViewChild('fecha') fecha!: IonDatetime;
+  private events$: Subscription;
   private precios = {
     sobremanteles: 200,
     mesaRegalos: 500,
@@ -121,9 +123,11 @@ export class Tab1Page {
       );
       this.actualizarValidacionesAnticipo();
     });
-    this.eventoService
-      .getEventos()
-      .forEach((evento) => this.fechasOcupadas.push(evento.fecha));
+    this.events$ = eventoService.getEventos().subscribe((events) => {
+      this.fechasOcupadas = [];
+      events.forEach((event) => this.fechasOcupadas.push(event.fecha));
+      console.log(this.fecha);
+    });
     this.eventoForm.controls.colorSobremantel.valueChanges.subscribe(() => {
       this.eventoForm.controls.precio.patchValue(this.calcularPrecio());
     });
@@ -254,25 +258,31 @@ export class Tab1Page {
   }
 
   confirmar() {
-    this.eventoService.addEvento({
-      ...this.eventoForm.getRawValue(),
-      estado: 'Confirmado',
-    });
-    this.fechasOcupadas.push(
-      new Date(this.eventoForm.controls.fecha.value).toISOString().slice(0, 10)
-    );
-    this.eventoForm.reset();
+    this.eventoService
+      .addEvento({
+        ...this.eventoForm.getRawValue(),
+        estado: 'Confirmado',
+      })
+      .then(() => {
+        this.eventoForm.reset();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   apartar() {
-    this.eventoService.addEvento({
-      ...this.eventoForm.getRawValue(),
-      estado: 'Apartado',
-    });
-    this.fechasOcupadas.push(
-      new Date(this.eventoForm.controls.fecha.value).toISOString().slice(0, 10)
-    );
-    this.eventoForm.reset();
+    this.eventoService
+      .addEvento({
+        ...this.eventoForm.getRawValue(),
+        estado: 'Apartado',
+      })
+      .then(() => {
+        this.eventoForm.reset();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   private calcularPrecio(): number {
@@ -316,5 +326,9 @@ export class Tab1Page {
       }
       return null;
     };
+  }
+
+  ngOnDestroy() {
+    this.events$.unsubscribe();
   }
 }

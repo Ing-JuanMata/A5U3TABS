@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { IonDatetime, IonicModule } from '@ionic/angular';
 import { EventoService } from '../services/evento.service';
 import { Evento } from '../models/evento';
 import { Title } from '@angular/platform-browser';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-tab2',
@@ -12,7 +13,7 @@ import { Title } from '@angular/platform-browser';
   standalone: true,
   imports: [IonicModule, CommonModule],
 })
-export class Tab2Page implements OnInit {
+export class Tab2Page implements OnDestroy {
   @ViewChild('calendar', { static: false }) calendar!: IonDatetime;
   private higlightColors = {
     'XV años': { backgroundColor: '#428cff', textColor: '#fff' },
@@ -21,25 +22,25 @@ export class Tab2Page implements OnInit {
   };
   event?: Evento;
   highlightedDates: ColorDate[] = [];
+  events$: Subscription;
+  event$?: Subscription;
 
-  constructor(private eventoService: EventoService, title:Title) {
+  constructor(private eventoService: EventoService, title: Title) {
     title.setTitle('Calendario');
-  }
-
-  ngOnInit() {
-    const eventos = this.eventoService.getEventos();
-    eventos.forEach((evento) => this.marcarFecha(evento.fecha, evento.tipo));
-  }
-
-  ionViewDidEnter() {
-    this.ngOnInit();
-    this.calendar.reset();
+    this.events$ = eventoService.getEventos().subscribe((eventos) => {
+      this.highlightedDates = [];
+      eventos.forEach((evento) => this.marcarFecha(evento.fecha, evento.tipo));
+      this.calendar.reset();
+    });
   }
 
   onDateChange(event: any) {
     const date = event.detail.value[0];
-    this.event = this.eventoService.getEvento(date);
-    this.calendar.reset();
+    this.event$?.unsubscribe();
+    this.event$ = this.eventoService.getEvento(date).subscribe((event) => {
+      this.event = event[0];
+      this.calendar.reset();
+    });
   }
 
   getColor(tipo: string) {
@@ -58,6 +59,11 @@ export class Tab2Page implements OnInit {
         ? this.higlightColors['Boda']
         : this.higlightColors['Cumpleaños'];
     this.highlightedDates.push({ date: fecha, ...color });
+  }
+
+  ngOnDestroy() {
+    this.event$?.unsubscribe();
+    this.events$.unsubscribe();
   }
 }
 

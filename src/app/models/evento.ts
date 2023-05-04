@@ -1,6 +1,7 @@
 import { FormControl } from '@angular/forms';
 
 export interface Evento {
+  id?: string;
   fecha: string;
   hora: string;
   cliente: string;

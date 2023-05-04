@@ -1,13 +1,32 @@
 import { Injectable } from '@angular/core';
 import { Evento } from '../models/evento';
+import {
+  CollectionReference,
+  DocumentData,
+  Firestore,
+  addDoc,
+  collection,
+  collectionData,
+  deleteDoc,
+  doc,
+  docData,
+  getDoc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EventoService {
+  private collection: CollectionReference<DocumentData>;
   private eventos: Evento[];
 
-  constructor() {
+  constructor(private readonly firestore: Firestore) {
+    this.collection = collection(firestore, 'events');
     this.eventos = [
       {
         fecha: '2023-04-18',
@@ -31,29 +50,28 @@ export class EventoService {
   }
 
   getEventos() {
-    return this.eventos;
+    return collectionData(this.collection, { idField: 'id' }) as Observable<
+      Evento[]
+    >;
   }
 
   getEvento(fecha: string) {
-    return this.eventos.find((evento) => evento.fecha === fecha);
+    return collectionData(
+      query(this.collection, where('fecha', '==', fecha))
+    ) as Observable<Evento[]>;
   }
 
-  addEvento(evento: Evento) {
-    this.eventos.push(evento);
-    return this.eventos;
+  async addEvento(evento: Evento) {
+    const ref = await addDoc(this.collection, evento);
+    return docData(ref);
   }
 
   updateEvento(evento: Evento) {
-    const index = this.eventos.findIndex(
-      (evento) => evento.fecha === evento.fecha
-    );
-    this.eventos[index] = evento;
-    return this.eventos;
+    const dcmt = doc(this.firestore, `${this.collection.path}/${evento.id!!}`);
+    return updateDoc(dcmt, { ...evento });
   }
 
-  deleteEvento(fecha: string) {
-    const index = this.eventos.findIndex((evento) => evento.fecha === fecha);
-    this.eventos.splice(index, 1);
-    return this.eventos;
+  deleteEvento(id: string) {
+    return deleteDoc(doc(this.firestore, `${this.collection.path}/${id}`));
   }
 }
